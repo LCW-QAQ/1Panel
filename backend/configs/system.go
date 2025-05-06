@@ -25,6 +25,8 @@ type System struct {
 	IsIntl             bool   `mapstructure:"is_intl"`
 	LicenseVerify      string `mapstructure:"license_verify"`
 	AppRepo            string `mapstructure:"app_repo"`
+	UseLocalAsserts    bool   `mapstructure:"use_local_asserts"`
+	LocalAsserts       string `mapstructure:"local_asserts"`
 	ChangeUserInfo     string `mapstructure:"change_user_info"`
 	OneDriveID         string `mapstructure:"one_drive_id"`
 	OneDriveSc         string `mapstructure:"one_drive_sc"`

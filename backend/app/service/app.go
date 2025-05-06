@@ -5,13 +5,15 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 
 	"github.com/1Panel-dev/1Panel/backend/app/dto"
 	"github.com/1Panel-dev/1Panel/backend/app/dto/request"
@@ -829,7 +831,7 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 	defer func() {
 		if err != nil {
 			_ = settingService.Update("AppStoreSyncStatus", constant.SyncFailed)
-			global.LOG.Errorf("App Store synchronization failed %v", err)
+			global.LOG.Errorf("App Store synchronization failed %+v", err)
 		}
 	}()
 
@@ -872,10 +874,35 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 			continue
 		}
 
-		_, iconRes, err := httpUtil.HandleGetWithTransport(l.Icon, http.MethodGet, transport, constant.TimeOut20s)
-		if err != nil {
-			return err
+		// 本地资源缓存
+		isUseLocalAsserts := global.CONF.System.UseLocalAsserts
+
+		// 图标数据
+		var iconRes []byte
+
+		if isUseLocalAsserts {
+			if _, iconRes, err = ReadLocalAsssetPath(l.Icon); err != nil {
+				return err
+			}
 		}
+
+		if iconRes == nil {
+			_, iconRes, err = httpUtil.HandleGetWithTransport(l.Icon, http.MethodGet, transport, constant.TimeOut20s)
+		}
+
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		// 缓存下载的图标
+		if global.CONF.System.LocalAsserts != "" {
+			go func() {
+				if err := SaveLocalAssert(l.Icon, iconRes); err != nil {
+					global.LOG.Errorf("%+v", err)
+				}
+			}()
+		}
+
 		iconStr := ""
 		if !strings.Contains(string(iconRes), "<xml>") {
 			iconStr = base64.StdEncoding.EncodeToString(iconRes)
@@ -905,10 +932,30 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 			}
 			if _, ok := InitTypes[app.Type]; ok {
 				dockerComposeUrl := fmt.Sprintf("%s/%s", versionUrl, "docker-compose.yml")
-				_, composeRes, err := httpUtil.HandleGetWithTransport(dockerComposeUrl, http.MethodGet, transport, constant.TimeOut20s)
-				if err != nil {
-					return err
+
+				var composeRes []byte
+
+				if isUseLocalAsserts {
+					if _, composeRes, err = ReadLocalAsssetPath(dockerComposeUrl); err != nil {
+						return err
+					}
 				}
+
+				if composeRes == nil {
+					_, composeRes, err = httpUtil.HandleGetWithTransport(dockerComposeUrl, http.MethodGet, transport, constant.TimeOut20s)
+					if err != nil {
+						return errors.WithStack(err)
+					}
+				}
+
+				if global.CONF.System.LocalAsserts != "" {
+					go func() {
+						if err := SaveLocalAssert(dockerComposeUrl, composeRes); err != nil {
+							global.LOG.Errorf("%+v", err)
+						}
+					}()
+				}
+
 				detail.DockerCompose = string(composeRes)
 			} else {
 				detail.DockerCompose = ""
@@ -1061,4 +1108,63 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 
 	global.LOG.Infof("Synchronization with the App Store was successful!")
 	return
+}
+
+// 返回值 (文件路径,文件内容,错误)
+func ReadLocalAsssetPath(url string) (string, []byte, error) {
+	localAsserts := global.CONF.System.LocalAsserts
+	logoPath, err := BuildAssertPath(url)
+
+	if err != nil {
+		return logoPath, nil, err
+	}
+
+	if localAsserts != "" {
+		if _, err := os.Stat(logoPath); err != nil {
+			return logoPath, nil, nil
+		}
+	}
+
+	buf, err := os.ReadFile(logoPath)
+	return logoPath, buf, errors.WithStack(err)
+}
+
+func SaveLocalAssert(url string, buf []byte) error {
+	global.LOG.Infof("Start SaveLocalAssert, url: %s, length: %d", url, len(buf))
+	defer global.LOG.Infof("End SaveLocalAssert, url: %s", url)
+
+	filePath, err := BuildAssertPath(url)
+	if err != nil {
+		return err
+	}
+
+	logoDir := filepath.Dir(filePath)
+	if err := os.MkdirAll(logoDir, os.FileMode(0666)); err != nil {
+		return errors.WithStack(err)
+	}
+
+	logoFile, err := os.OpenFile(filePath, os.O_CREATE|os.O_RDWR, os.FileMode(0666))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	defer logoFile.Close()
+
+	if _, err = logoFile.Write(buf); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func BuildAssertPath(url string) (string, error) {
+	assertPrefix := global.CONF.System.Mode + "/" + constant.PanelAssertsPrefix
+	assertPrefixIdx := strings.Index(url, assertPrefix)
+	assertEndIdx := assertPrefixIdx + len(assertPrefix)
+
+	if assertEndIdx >= len(url) {
+		return "", errors.New("Error Icon Path")
+	}
+
+	logoPath := url[assertEndIdx:]
+	return filepath.Join(global.CONF.System.LocalAsserts, logoPath), nil
 }
