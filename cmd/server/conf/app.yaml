@@ -3,10 +3,11 @@ system:
   base_dir: /opt
   mode: dev
   repo_url: https://resource.1panel.pro
-  app_repo: https://apps.1panel.pro
+  # app_repo: https://apps.1panel.pro
   # app_repo: http://127.0.0.1:8900
-  # use_local_asserts: true
-  # local_asserts: /usr/local/deploy/magic-runner/asserts/cache/dev/1panel
+  app_repo: http://192.188.100.101:8888
+  use_local_asserts: true
+  local_asserts: /usr/local/deploy/magic-runner/asserts/cache/dev/1panel
   is_demo: false
   is_intl: true
   port: 9999

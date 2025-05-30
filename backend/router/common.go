@@ -25,5 +25,6 @@ func commonGroups() []CommonRouter {
 		&WebsiteCARouter{},
 		&AIToolsRouter{},
 		&McpServerRouter{},
+		&HostsRouter{},
 	}
 }
