@@ -29,6 +29,7 @@ import (
 	"github.com/1Panel-dev/1Panel/backend/utils/files"
 	http2 "github.com/1Panel-dev/1Panel/backend/utils/http"
 	httpUtil "github.com/1Panel-dev/1Panel/backend/utils/http"
+	"github.com/1Panel-dev/1Panel/backend/utils/resource"
 	"github.com/1Panel-dev/1Panel/backend/utils/xpack"
 	"gopkg.in/yaml.v3"
 )
@@ -792,6 +793,16 @@ func getAppList() (*dto.AppList, error) {
 	if err = json.Unmarshal(content, list); err != nil {
 		return nil, err
 	}
+	// 尝试替换下载地址
+	if global.CONF.System.IsReplaceDownloadUrl {
+		for i := range list.Apps {
+			list.Apps[i].Icon = resource.WarpDownloadUrl(list.Apps[i].Icon)
+			for j := range list.Apps[i].Versions {
+				version := &list.Apps[i].Versions[j]
+				version.DownloadUrl = resource.WarpDownloadUrl(version.DownloadUrl)
+			}
+		}
+	}
 	return list, nil
 }
 
@@ -875,7 +886,7 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 		}
 
 		// 本地资源缓存
-		isUseLocalAsserts := global.CONF.System.UseLocalAsserts
+		isUseLocalAsserts := global.CONF.System.UseLocalAssets
 
 		// 图标数据
 		var iconRes []byte
@@ -895,7 +906,7 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 		}
 
 		// 缓存下载的图标
-		if global.CONF.System.LocalAsserts != "" {
+		if global.CONF.System.LocalAssets != "" {
 			go func() {
 				if err := SaveLocalAssert(l.Icon, iconRes); err != nil {
 					global.LOG.Errorf("%+v", err)
@@ -948,7 +959,7 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 					}
 				}
 
-				if global.CONF.System.LocalAsserts != "" {
+				if global.CONF.System.LocalAssets != "" {
 					go func() {
 						if err := SaveLocalAssert(dockerComposeUrl, composeRes); err != nil {
 							global.LOG.Errorf("%+v", err)
@@ -1112,7 +1123,7 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 
 // 返回值 (文件路径,文件内容,错误)
 func ReadLocalAsssetPath(url string) (string, []byte, error) {
-	localAsserts := global.CONF.System.LocalAsserts
+	localAsserts := global.CONF.System.LocalAssets
 	logoPath, err := BuildAssertPath(url)
 
 	if err != nil {
@@ -1166,5 +1177,5 @@ func BuildAssertPath(url string) (string, error) {
 	}
 
 	logoPath := url[assertEndIdx:]
-	return filepath.Join(global.CONF.System.LocalAsserts, logoPath), nil
+	return filepath.Join(global.CONF.System.LocalAssets, logoPath), nil
 }
