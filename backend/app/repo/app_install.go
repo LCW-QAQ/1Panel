@@ -182,7 +182,7 @@ func (a *AppInstallRepo) LoadBaseInfo(key string, name string) (*RootInfo, error
 		appInstall model.AppInstall
 		info       RootInfo
 	)
-	if err := global.DB.Where("key = ?", key).First(&app).Error; err != nil {
+	if err := global.DB.Where("key_ = ?", key).First(&app).Error; err != nil {
 		return nil, err
 	}
 	if len(name) == 0 {

@@ -150,7 +150,7 @@ var AddTableDatabasePostgresql = &gormigrate.Migration{
 			return err
 		}
 		var jobs []model.Cronjob
-		if err := tx.Where("type == ?", "database").Find(&jobs).Error; err != nil {
+		if err := tx.Where("type = ?", "database").Find(&jobs).Error; err != nil {
 			return err
 		}
 		for _, job := range jobs {
@@ -228,12 +228,12 @@ var UpdateOneDriveToken = &gormigrate.Migration{
 			return nil
 		}
 
-		_ = tx.Where("key = ?", "OneDriveID").First(&clientSetting).Error
+		_ = tx.Where("key_ = ?", "OneDriveID").First(&clientSetting).Error
 		if clientSetting.ID == 0 {
 			global.LOG.Error("system configuration lacks clientID information, please retry.")
 			return nil
 		}
-		_ = tx.Where("key = ?", "OneDriveSc").First(&secretSetting).Error
+		_ = tx.Where("key_ = ?", "OneDriveSc").First(&secretSetting).Error
 		if secretSetting.ID == 0 {
 			global.LOG.Error("system configuration lacks clientID information, please retry.")
 			return nil

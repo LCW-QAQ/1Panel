@@ -60,12 +60,12 @@ func (u *SettingRepo) Get(opts ...DBOption) (model.Setting, error) {
 
 func (c *SettingRepo) WithByKey(key string) DBOption {
 	return func(g *gorm.DB) *gorm.DB {
-		return g.Where("key = ?", key)
+		return g.Where("key_ = ?", key)
 	}
 }
 
 func (u *SettingRepo) Update(key, value string) error {
-	return global.DB.Model(&model.Setting{}).Where("key = ?", key).Updates(map[string]interface{}{"value": value}).Error
+	return global.DB.Model(&model.Setting{}).Where("key_ = ?", key).Updates(map[string]interface{}{"value": value}).Error
 }
 
 func (u *SettingRepo) CreateMonitorBase(model model.MonitorBase) error {
@@ -88,5 +88,5 @@ func (u *SettingRepo) DelMonitorNet(timeForDelete time.Time) error {
 }
 
 func (u *SettingRepo) UpdateOrCreate(key, value string) error {
-	return global.DB.Model(&model.Setting{}).Where("key = ?", key).Assign(model.Setting{Key: key, Value: value}).FirstOrCreate(&model.Setting{}).Error
+	return global.DB.Model(&model.Setting{}).Where("key_ = ?", key).Assign(model.Setting{Key: key, Value: value}).FirstOrCreate(&model.Setting{}).Error
 }

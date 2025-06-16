@@ -20,7 +20,7 @@ type Client struct {
 
 func NewClient() (Client, error) {
 	var settingItem model.Setting
-	_ = global.DB.Where("key = ?", "DockerSockPath").First(&settingItem).Error
+	_ = global.DB.Where("key_ = ?", "DockerSockPath").First(&settingItem).Error
 	if len(settingItem.Value) == 0 {
 		settingItem.Value = "unix:///var/run/docker.sock"
 	}
@@ -40,7 +40,7 @@ func (c Client) Close() {
 
 func NewDockerClient() (*client.Client, error) {
 	var settingItem model.Setting
-	_ = global.DB.Where("key = ?", "DockerSockPath").First(&settingItem).Error
+	_ = global.DB.Where("key_ = ?", "DockerSockPath").First(&settingItem).Error
 	if len(settingItem.Value) == 0 {
 		settingItem.Value = "unix:///var/run/docker.sock"
 	}

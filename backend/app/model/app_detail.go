@@ -9,7 +9,7 @@ type AppDetail struct {
 	Status              string `json:"status" gorm:"type:varchar(64);not null"`
 	LastVersion         string `json:"lastVersion" gorm:"type:varchar(64);"`
 	LastModified        int    `json:"lastModified" gorm:"type:integer;"`
-	DownloadUrl         string `json:"downloadUrl"  gorm:"type:varchar;"`
+	DownloadUrl         string `json:"downloadUrl"  gorm:"type:varchar(1024);"`
 	DownloadCallBackUrl string `json:"downloadCallBackUrl" gorm:"type:longtext;"`
 	Update              bool   `json:"update"`
 	IgnoreUpgrade       bool   `json:"ignoreUpgrade"`

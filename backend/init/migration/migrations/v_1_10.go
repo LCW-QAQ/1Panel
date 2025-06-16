@@ -131,7 +131,7 @@ var AddNoAuthSetting = &gormigrate.Migration{
 var UpdateXpackHideMenu = &gormigrate.Migration{
 	ID: "20240411-update-xpack-hide-menu",
 	Migrate: func(tx *gorm.DB) error {
-		if err := tx.Model(&model.Setting{}).Where("key", "XpackHideMenu").Updates(map[string]interface{}{"value": "{\"id\":\"1\",\"label\":\"/xpack\",\"isCheck\":true,\"title\":\"xpack.menu\",\"children\":[{\"id\":\"2\",\"title\":\"xpack.waf.name\",\"path\":\"/xpack/waf/dashboard\",\"label\":\"Dashboard\",\"isCheck\":true},{\"id\":\"3\",\"title\":\"xpack.tamper.tamper\",\"path\":\"/xpack/tamper\",\"label\":\"Tamper\",\"isCheck\":true},{\"id\":\"4\",\"title\":\"xpack.gpu.gpu\",\"path\":\"/xpack/gpu\",\"label\":\"GPU\",\"isCheck\":true},{\"id\":\"5\",\"title\":\"xpack.setting.setting\",\"path\":\"/xpack/setting\",\"label\":\"XSetting\",\"isCheck\":true}]}"}).Error; err != nil {
+		if err := tx.Model(&model.Setting{}).Where("key_", "XpackHideMenu").Updates(map[string]interface{}{"value": "{\"id\":\"1\",\"label\":\"/xpack\",\"isCheck\":true,\"title\":\"xpack.menu\",\"children\":[{\"id\":\"2\",\"title\":\"xpack.waf.name\",\"path\":\"/xpack/waf/dashboard\",\"label\":\"Dashboard\",\"isCheck\":true},{\"id\":\"3\",\"title\":\"xpack.tamper.tamper\",\"path\":\"/xpack/tamper\",\"label\":\"Tamper\",\"isCheck\":true},{\"id\":\"4\",\"title\":\"xpack.gpu.gpu\",\"path\":\"/xpack/gpu\",\"label\":\"GPU\",\"isCheck\":true},{\"id\":\"5\",\"title\":\"xpack.setting.setting\",\"path\":\"/xpack/setting\",\"label\":\"XSetting\",\"isCheck\":true}]}"}).Error; err != nil {
 			return err
 		}
 		return nil
@@ -185,7 +185,7 @@ var AddMonitorMenu = &gormigrate.Migration{
 			setting model.Setting
 			menu    dto.XpackHideMenu
 		)
-		tx.Model(&model.Setting{}).Where("key", "XpackHideMenu").First(&setting)
+		tx.Model(&model.Setting{}).Where("key_", "XpackHideMenu").First(&setting)
 		if err := json.Unmarshal([]byte(setting.Value), &menu); err != nil {
 			return err
 		}
@@ -200,7 +200,7 @@ var AddMonitorMenu = &gormigrate.Migration{
 		if err != nil {
 			return err
 		}
-		return tx.Model(&model.Setting{}).Where("key", "XpackHideMenu").Updates(map[string]interface{}{"value": string(data)}).Error
+		return tx.Model(&model.Setting{}).Where("key_", "XpackHideMenu").Updates(map[string]interface{}{"value": string(data)}).Error
 	},
 }
 
@@ -296,7 +296,7 @@ var AddAlertMenu = &gormigrate.Migration{
 			setting model.Setting
 			menu    dto.XpackHideMenu
 		)
-		tx.Model(&model.Setting{}).Where("key", "XpackHideMenu").First(&setting)
+		tx.Model(&model.Setting{}).Where("key_", "XpackHideMenu").First(&setting)
 		if err := json.Unmarshal([]byte(setting.Value), &menu); err != nil {
 			return err
 		}
@@ -311,7 +311,7 @@ var AddAlertMenu = &gormigrate.Migration{
 		if err != nil {
 			return err
 		}
-		return tx.Model(&model.Setting{}).Where("key", "XpackHideMenu").Updates(map[string]interface{}{"value": string(data)}).Error
+		return tx.Model(&model.Setting{}).Where("key_", "XpackHideMenu").Updates(map[string]interface{}{"value": string(data)}).Error
 	},
 }
 
@@ -399,7 +399,7 @@ var AddAppMenu = &gormigrate.Migration{
 			menu    dto.XpackHideMenu
 		)
 
-		tx.Model(&model.Setting{}).Where("key = ?", "XpackHideMenu").First(&setting)
+		tx.Model(&model.Setting{}).Where("key_ = ?", "XpackHideMenu").First(&setting)
 
 		if err := json.Unmarshal([]byte(setting.Value), &menu); err != nil {
 			return err
@@ -434,7 +434,7 @@ var AddAppMenu = &gormigrate.Migration{
 			return err
 		}
 
-		return tx.Model(&model.Setting{}).Where("key = ?", "XpackHideMenu").Updates(map[string]interface{}{"value": string(data)}).Error
+		return tx.Model(&model.Setting{}).Where("key_ = ?", "XpackHideMenu").Updates(map[string]interface{}{"value": string(data)}).Error
 	},
 }
 

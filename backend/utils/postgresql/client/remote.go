@@ -254,7 +254,7 @@ func loadImageTag() (string, error) {
 		appDetails []model.AppDetail
 		versions   []string
 	)
-	if err := global.DB.Where("key = ?", "postgresql").First(&app).Error; err != nil {
+	if err := global.DB.Where("key_ = ?", "postgresql").First(&app).Error; err != nil {
 		versions = []string{"postgres:16.1-alpine", "postgres:16.0-alpine"}
 	} else {
 		if err := global.DB.Where("app_id = ?", app.ID).Find(&appDetails).Error; err != nil {

@@ -58,7 +58,7 @@ func loadDBConn() (*gorm.DB, error) {
 
 func getSettingByKey(db *gorm.DB, key string) string {
 	var setting setting
-	_ = db.Where("key = ?", key).First(&setting).Error
+	_ = db.Where("key_ = ?", key).First(&setting).Error
 	return setting.Value
 }
 
@@ -71,7 +71,7 @@ func isDefault(db *gorm.DB) bool {
 }
 
 func setSettingByKey(db *gorm.DB, key, value string) error {
-	return db.Model(&setting{}).Where("key = ?", key).Updates(map[string]interface{}{"value": value}).Error
+	return db.Model(&setting{}).Where("key_ = ?", key).Updates(map[string]interface{}{"value": value}).Error
 }
 
 func isRoot() bool {

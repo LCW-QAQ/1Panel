@@ -43,7 +43,7 @@ func (a AppRepo) WithLikeName(name string) DBOption {
 
 func (a AppRepo) WithKey(key string) DBOption {
 	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("key = ?", key)
+		return db.Where("key_ = ?", key)
 	}
 }
 
@@ -104,7 +104,7 @@ func (a AppRepo) BatchCreate(ctx context.Context, apps []model.App) error {
 
 func (a AppRepo) GetByKey(ctx context.Context, key string) (model.App, error) {
 	var app model.App
-	if err := getTx(ctx).Where("key = ?", key).First(&app).Error; err != nil {
+	if err := getTx(ctx).Where("key_ = ?", key).First(&app).Error; err != nil {
 		return app, err
 	}
 	return app, nil

@@ -2,33 +2,34 @@ package model
 
 import (
 	"encoding/json"
+	"path/filepath"
+	"strings"
+
 	"github.com/1Panel-dev/1Panel/backend/constant"
 	"github.com/1Panel-dev/1Panel/backend/utils/common"
 	"github.com/gin-gonic/gin"
-	"path/filepath"
-	"strings"
 )
 
 type App struct {
 	BaseModel
-	Name               string `json:"name" gorm:"type:varchar(64);not null"`
-	Key                string `json:"key" gorm:"type:varchar(64);not null;"`
+	Name               string `json:"name" gorm:"type:varchar(255);not null"`
+	Key                string `json:"key" gorm:"column:key_;type:varchar(255);not null;"`
 	ShortDescZh        string `json:"shortDescZh" yaml:"shortDescZh" gorm:"type:longtext;"`
 	ShortDescEn        string `json:"shortDescEn" yaml:"shortDescEn" gorm:"type:longtext;"`
 	Description        string `json:"description"`
 	Icon               string `json:"icon" gorm:"type:longtext;"`
-	Type               string `json:"type" gorm:"type:varchar(64);not null"`
-	Status             string `json:"status" gorm:"type:varchar(64);not null"`
-	Required           string `json:"required" gorm:"type:varchar(64);"`
+	Type               string `json:"type" gorm:"type:varchar(255);not null"`
+	Status             string `json:"status" gorm:"type:varchar(255);not null"`
+	Required           string `json:"required" gorm:"type:varchar(255);"`
 	GpuSupport         bool   `json:"gpuSupport"`
 	CrossVersionUpdate bool   `json:"crossVersionUpdate" yaml:"crossVersionUpdate"`
 	Limit              int    `json:"limit" gorm:"type:Integer;not null"`
-	Website            string `json:"website" gorm:"type:varchar(64);not null"`
-	Github             string `json:"github" gorm:"type:varchar(64);not null"`
-	Document           string `json:"document" gorm:"type:varchar(64);not null"`
+	Website            string `json:"website" gorm:"type:text;not null"`
+	Github             string `json:"github" gorm:"type:varchar(255);not null"`
+	Document           string `json:"document" gorm:"type:text;not null"`
 	Recommend          int    `json:"recommend" gorm:"type:Integer;not null"`
-	Resource           string `json:"resource" gorm:"type:varchar;not null;default:remote"`
-	ReadMe             string `json:"readMe" gorm:"type:varchar;"`
+	Resource           string `json:"resource" gorm:"type:varchar(255);not null;default:remote"`
+	ReadMe             string `json:"readMe" gorm:"type:text;"`
 	LastModified       int    `json:"lastModified" gorm:"type:Integer;"`
 
 	Details []AppDetail `json:"-" gorm:"-:migration"`
