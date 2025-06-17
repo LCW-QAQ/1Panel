@@ -23,7 +23,7 @@ func Init() {
 	mode := ""
 	version := "v1.0.0"
 	username, password, entrance, language := "", "", "", "zh"
-	appRepo, useLocalAssets, localAssets := "", false, ""
+	appRepo, useLocalAssets, localAssets, dbType, dsn := "", false, "", "", ""
 	fileOp := files.NewFileOp()
 	v := viper.NewWithOptions()
 	v.SetConfigType("yaml")
@@ -52,6 +52,8 @@ func Init() {
 		appRepo = loadParams("APP_REPO")
 		useLocalAssets = loadParams("USE_LOCAL_ASSETS") == "true"
 		localAssets = loadParams("LOCAL_ASSETS")
+		dbType = loadParams("DB_TYPE")
+		dsn = loadParams("DSN")
 
 		reader := bytes.NewReader(conf.AppYaml)
 		if err := v.ReadConfig(reader); err != nil {
@@ -109,6 +111,9 @@ func Init() {
 	global.CONF.System.Language = language
 	global.CONF.System.ChangeUserInfo = loadChangeInfo()
 	global.CONF.System.LicenseVerify = os.Getenv("LXWARE_LICENSE_VERIFY")
+	// TODO 解决配置解析问题
+	global.CONF.System.DbType = dbType
+	global.CONF.System.Dsn = dsn
 	global.Viper = v
 
 	if appRepo != "" {

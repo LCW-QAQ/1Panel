@@ -14,6 +14,9 @@ system:
   port: 9999
   username: admin
   password: admin123
+  # Only support mysql or sqlite
+  db_type: mysql
+  dsn: root:123456@tcp(192.188.100.101:3336)/1panel?charset=utf8mb4&parseTime=True&loc=Local
 
 log:
   level: debug

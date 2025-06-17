@@ -35,4 +35,6 @@ type System struct {
 	ApiKey               string `mapstructure:"api_key"`
 	IpWhiteList          string `mapstructure:"ip_white_list"`
 	ApiKeyValidityTime   string `mapstructure:"api_key_validity_time"`
+	DbType               string `mapstructure:"db_type"`
+	Dsn                  string `mapstructure:"dsn"`
 }
