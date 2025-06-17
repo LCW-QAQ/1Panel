@@ -955,19 +955,29 @@ func (a AppService) SyncAppListFromRemote() (err error) {
 				if composeRes == nil {
 					_, composeRes, err = httpUtil.HandleGetWithTransport(dockerComposeUrl, http.MethodGet, transport, constant.TimeOut20s)
 					if err != nil {
-						return errors.WithStack(err)
+						/// 找不到资源跳过即可
+						// return errors.WithStack(err)
+						global.LOG.Warnf("未找到dockerCompose资源, url: %s", dockerComposeUrl)
+						continue
 					}
 				}
 
 				if global.CONF.System.LocalAssets != "" {
 					go func() {
+						if composeRes == nil {
+							return
+						}
 						if err := SaveLocalAssert(dockerComposeUrl, composeRes); err != nil {
 							global.LOG.Errorf("%+v", err)
 						}
 					}()
 				}
 
-				detail.DockerCompose = string(composeRes)
+				if composeRes == nil {
+					detail.DockerCompose = ""
+				} else {
+					detail.DockerCompose = string(composeRes)
+				}
 			} else {
 				detail.DockerCompose = ""
 			}
