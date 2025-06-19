@@ -1,14 +1,14 @@
 system:
   db_file: 1Panel.db
   base_dir: /opt
-  mode: dev
+  mode: stable
   repo_url: https://resource.1panel.pro
   # app_repo: https://apps.1panel.pro
   # app_repo: http://127.0.0.1:8900
   app_repo: http://192.188.100.101:8888
   is_replace_download_url: true
   use_local_assets: true
-  local_assets: /usr/local/deploy/magic-runner/asserts/cache/dev/1panel
+  local_assets: /usr/local/deploy/1panel_assets/stable/1panel
   is_demo: false
   is_intl: true
   port: 9999

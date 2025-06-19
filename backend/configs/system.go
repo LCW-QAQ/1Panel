@@ -37,4 +37,5 @@ type System struct {
 	ApiKeyValidityTime   string `mapstructure:"api_key_validity_time"`
 	DbType               string `mapstructure:"db_type"`
 	Dsn                  string `mapstructure:"dsn"`
+	OrmLogLevel          string `mapstructure:"orm_log_level"`
 }

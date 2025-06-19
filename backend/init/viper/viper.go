@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/1Panel-dev/1Panel/backend/configs"
@@ -23,7 +24,7 @@ func Init() {
 	mode := ""
 	version := "v1.0.0"
 	username, password, entrance, language := "", "", "", "zh"
-	appRepo, useLocalAssets, localAssets, dbType, dsn := "", false, "", "", ""
+	appRepo, useLocalAssets, localAssets, dbType, dsn, ormLogLevel := "", false, "", "", "", "Silent"
 	fileOp := files.NewFileOp()
 	v := viper.NewWithOptions()
 	v.SetConfigType("yaml")
@@ -54,6 +55,7 @@ func Init() {
 		localAssets = loadParams("LOCAL_ASSETS")
 		dbType = loadParams("DB_TYPE")
 		dsn = loadParams("DSN")
+		ormLogLevel = loadParams("ORM_LOG_LEVEL")
 
 		reader := bytes.NewReader(conf.AppYaml)
 		if err := v.ReadConfig(reader); err != nil {
@@ -111,9 +113,9 @@ func Init() {
 	global.CONF.System.Language = language
 	global.CONF.System.ChangeUserInfo = loadChangeInfo()
 	global.CONF.System.LicenseVerify = os.Getenv("LXWARE_LICENSE_VERIFY")
-	// TODO 解决配置解析问题
 	global.CONF.System.DbType = dbType
 	global.CONF.System.Dsn = dsn
+	global.CONF.System.OrmLogLevel = ormLogLevel
 	global.Viper = v
 
 	if appRepo != "" {
@@ -129,13 +131,18 @@ func Init() {
 }
 
 func loadParams(param string) string {
-	stdout, err := cmd.Execf("grep '^%s=' /usr/local/bin/1pctl | cut -d'=' -f2", param)
+	stdout, err := cmd.Execf("grep '^%s=' /usr/local/bin/1pctl | cut -d'=' -f2-", param)
 	if err != nil {
 		panic(err)
 	}
 	info := strings.ReplaceAll(stdout, "\n", "")
 	if len(info) == 0 || info == `""` {
 		panic(fmt.Sprintf("error `%s` find in /usr/local/bin/1pctl", param))
+	}
+	rex := regexp.MustCompile("^\"(.*?)\"$")
+	matchs := rex.FindAllStringSubmatch(info, -1)
+	if len(matchs) > 0 && len(matchs[0]) > 1 {
+		info = matchs[0][1]
 	}
 	return info
 }

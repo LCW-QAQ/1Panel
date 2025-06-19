@@ -15,93 +15,58 @@ import (
 )
 
 func Init() {
-	if global.CONF.System.DbType == "mysql" {
-		global.LOG.Infof("hello")
-
-		newLogger := logger.New(
-			log.New(os.Stdout, "\r\n", log.LstdFlags),
-			logger.Config{
-				SlowThreshold:             time.Second,
-				LogLevel:                  logger.Silent,
-				IgnoreRecordNotFoundError: true,
-				Colorful:                  false,
-			},
-		)
-
-		db, err := gorm.Open(mysql.Open(global.CONF.System.Dsn), &gorm.Config{
-			DisableForeignKeyConstraintWhenMigrating: true,
-			Logger:                                   newLogger,
-		})
-		if err != nil {
-			panic(err)
-		}
-		sqlDB, dbError := db.DB()
-		if dbError != nil {
-			panic(dbError)
-		}
-		sqlDB.SetConnMaxIdleTime(10)
-		sqlDB.SetMaxOpenConns(100)
-		sqlDB.SetConnMaxLifetime(time.Hour)
-
-		global.DB = db
-		global.MonitorDB = db
-		global.LOG.Info("init monitor db successfully")
-		global.LOG.Info("init db successfully")
-		return
+	var dsn string
+	if global.CONF.System.DbType != "" {
+		dsn = global.CONF.System.Dsn
+	} else {
+		dsn = getDbFilePath(global.CONF.System.DbFile)
 	}
+	dialector := buildDialector(global.CONF.System.DbType, dsn)
 
-	if _, err := os.Stat(global.CONF.System.DbPath); err != nil {
-		if err := os.MkdirAll(global.CONF.System.DbPath, os.ModePerm); err != nil {
-			panic(fmt.Errorf("init db dir failed, err: %v", err))
-		}
-	}
-	fullPath := global.CONF.System.DbPath + "/" + global.CONF.System.DbFile
-	if _, err := os.Stat(fullPath); err != nil {
-		f, err := os.Create(fullPath)
-		if err != nil {
-			panic(fmt.Errorf("init db file failed, err: %v", err))
-		}
-		_ = f.Close()
+	var logLevel logger.LogLevel
+	switch global.CONF.System.OrmLogLevel {
+	case "Info":
+		logLevel = logger.Info
+	case "Warn":
+		logLevel = logger.Warn
+	case "Error":
+		logLevel = logger.Error
+	case "Silent":
+	default:
+		logLevel = logger.Silent
 	}
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
 			SlowThreshold:             time.Second,
-			LogLevel:                  logger.Silent,
+			LogLevel:                  logLevel,
 			IgnoreRecordNotFoundError: true,
 			Colorful:                  false,
 		},
 	)
-	initMonitorDB(newLogger)
 
-	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{
-		DisableForeignKeyConstraintWhenMigrating: true,
-		Logger:                                   newLogger,
-	})
-	if err != nil {
-		panic(err)
-	}
-	_ = db.Exec("PRAGMA journal_mode = WAL;")
-	sqlDB, dbError := db.DB()
-	if dbError != nil {
-		panic(dbError)
-	}
-	sqlDB.SetConnMaxIdleTime(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxLifetime(time.Hour)
-
-	global.DB = db
+	global.DB = createDBWithLogger(dialector, newLogger)
 	global.LOG.Info("init db successfully")
+
+	initMonitorDB(newLogger)
 }
 
-func initMonitorDB(newLogger logger.Interface) {
+func buildDialector(dbType string, dsn string) gorm.Dialector {
+	if dbType == "mysql" {
+		return mysql.Open(dsn)
+	} else {
+		return sqlite.Open(dsn)
+	}
+}
+
+func getDbFilePath(dbFile string) string {
 	if _, err := os.Stat(global.CONF.System.DbPath); err != nil {
 		if err := os.MkdirAll(global.CONF.System.DbPath, os.ModePerm); err != nil {
 			panic(fmt.Errorf("init db dir failed, err: %v", err))
 		}
 	}
-	fullPath := path.Join(global.CONF.System.DbPath, "monitor.db")
+	fullPath := path.Join(global.CONF.System.DbPath, dbFile)
 	if _, err := os.Stat(fullPath); err != nil {
 		f, err := os.Create(fullPath)
 		if err != nil {
@@ -109,14 +74,22 @@ func initMonitorDB(newLogger logger.Interface) {
 		}
 		_ = f.Close()
 	}
+	return fullPath
+}
 
-	db, err := gorm.Open(sqlite.Open(fullPath), &gorm.Config{
+func createDBWithLogger(dialector gorm.Dialector, loggerInstance logger.Interface) *gorm.DB {
+	db, err := gorm.Open(dialector, &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
-		Logger:                                   newLogger,
+		Logger:                                   loggerInstance,
 	})
 	if err != nil {
 		panic(err)
 	}
+
+	if _, ok := dialector.(sqlite.Dialector); ok {
+		_ = db.Exec("PRAGMA journal_mode = WAL;")
+	}
+
 	sqlDB, dbError := db.DB()
 	if dbError != nil {
 		panic(dbError)
@@ -125,6 +98,15 @@ func initMonitorDB(newLogger logger.Interface) {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	global.MonitorDB = db
+	return db
+}
+
+func initMonitorDB(newLogger logger.Interface) {
+	if global.CONF.System.DbType != "" {
+		global.MonitorDB = global.DB
+		return
+	}
+	fullPath := getDbFilePath("monitor.db")
+	global.MonitorDB = createDBWithLogger(sqlite.Open(fullPath), newLogger)
 	global.LOG.Info("init monitor db successfully")
 }
