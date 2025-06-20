@@ -102,10 +102,6 @@ func createDBWithLogger(dialector gorm.Dialector, loggerInstance logger.Interfac
 }
 
 func initMonitorDB(newLogger logger.Interface) {
-	if global.CONF.System.DbType != "" {
-		global.MonitorDB = global.DB
-		return
-	}
 	fullPath := getDbFilePath("monitor.db")
 	global.MonitorDB = createDBWithLogger(sqlite.Open(fullPath), newLogger)
 	global.LOG.Info("init monitor db successfully")

@@ -7,7 +7,7 @@ system:
   # app_repo: http://127.0.0.1:8900
   app_repo: http://192.188.100.101:8888
   is_replace_download_url: true
-  use_local_assets: true
+  use_local_assets: false
   local_assets: /usr/local/deploy/1panel_assets/stable/1panel
   is_demo: false
   is_intl: true
