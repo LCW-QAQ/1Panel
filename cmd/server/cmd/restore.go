@@ -26,10 +26,10 @@ var restoreCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl restore"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl restore"}))
 			return nil
 		}
-		stdout, err := cmdUtils.Exec("grep '^BASE_DIR=' /usr/local/bin/1pctl | cut -d'=' -f2")
+		stdout, err := cmdUtils.Exec("grep '^BASE_DIR=' /usr/local/bin/zpctl | cut -d'=' -f2")
 		if err != nil {
 			return fmt.Errorf("handle load `BASE_DIR` failed, err: %v", err)
 		}
@@ -51,7 +51,7 @@ var restoreCmd = &cobra.Command{
 			return err
 		}
 		fmt.Println(i18n.GetMsgByKeyForCmd("RestoreStep2"))
-		if err := common.CopyFile(path.Join(tmpPath, "1pctl"), "/usr/local/bin"); err != nil {
+		if err := common.CopyFile(path.Join(tmpPath, "zpctl"), "/usr/local/bin"); err != nil {
 			return err
 		}
 		_, _ = cmdUtils.Execf("cp -r %s /usr/local/bin", path.Join(tmpPath, "lang"))

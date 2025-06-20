@@ -131,13 +131,13 @@ func Init() {
 }
 
 func loadParams(param string) string {
-	stdout, err := cmd.Execf("grep '^%s=' /usr/local/bin/1pctl | cut -d'=' -f2-", param)
+	stdout, err := cmd.Execf("grep '^%s=' /usr/local/bin/zpctl | cut -d'=' -f2-", param)
 	if err != nil {
 		panic(err)
 	}
 	info := strings.ReplaceAll(stdout, "\n", "")
 	if len(info) == 0 || info == `""` {
-		panic(fmt.Sprintf("error `%s` find in /usr/local/bin/1pctl", param))
+		panic(fmt.Sprintf("error `%s` find in /usr/local/bin/zpctl", param))
 	}
 	rex := regexp.MustCompile("^\"(.*?)\"$")
 	matchs := rex.FindAllStringSubmatch(info, -1)
@@ -148,7 +148,7 @@ func loadParams(param string) string {
 }
 
 func loadChangeInfo() string {
-	stdout, err := cmd.Exec("grep '^CHANGE_USER_INFO=' /usr/local/bin/1pctl | cut -d'=' -f2")
+	stdout, err := cmd.Exec("grep '^CHANGE_USER_INFO=' /usr/local/bin/zpctl | cut -d'=' -f2")
 	if err != nil {
 		return ""
 	}

@@ -107,10 +107,10 @@ func (u *SnapshotService) HandleSnapshotRecover(snap model.Snapshot, isRecover b
 		global.LOG.Debug("recover 1panel binary from snapshot file successful!")
 		req.IsNew = true
 	}
-	if req.IsNew || snap.InterruptStep == "1PctlBinary" {
+	if req.IsNew || snap.InterruptStep == "zpctlBinary" {
 		binDir := systemctl.BinaryPath
-		if err := recoverPanel(path.Join(snapFileDir, "1panel/1pctl"), binDir); err != nil {
-			updateRecoverStatus(snap.ID, isRecover, "1PctlBinary", constant.StatusFailed, err.Error())
+		if err := recoverPanel(path.Join(snapFileDir, "1panel/zpctl"), binDir); err != nil {
+			updateRecoverStatus(snap.ID, isRecover, "zpctlBinary", constant.StatusFailed, err.Error())
 			return
 		}
 		langDir := path.Join(binDir, "lang")
@@ -122,7 +122,7 @@ func (u *SnapshotService) HandleSnapshotRecover(snap model.Snapshot, isRecover b
 			updateRecoverStatus(snap.ID, isRecover, "CopyLang", constant.StatusFailed, fmt.Sprintf("copy lang files failed: %v", err))
 			return
 		}
-		global.LOG.Debug("recover 1pctl from snapshot file successful!")
+		global.LOG.Debug("recover zpctl from snapshot file successful!")
 		req.IsNew = true
 	}
 	if req.IsNew || snap.InterruptStep == "1PanelService" {

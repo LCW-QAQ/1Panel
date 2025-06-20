@@ -257,7 +257,7 @@ func handleUserInfo(tags string, settingRepo repo.ISettingRepo) {
 	}
 
 	sudo := cmd.SudoHandleCmd()
-	_, _ = cmd.Execf("%s sed -i '/CHANGE_USER_INFO=%v/d' /usr/local/bin/1pctl", sudo, global.CONF.System.ChangeUserInfo)
+	_, _ = cmd.Execf("%s sed -i '/CHANGE_USER_INFO=%v/d' /usr/local/bin/zpctl", sudo, global.CONF.System.ChangeUserInfo)
 }
 
 func initDir() {

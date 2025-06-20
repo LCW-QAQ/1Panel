@@ -65,7 +65,7 @@ func snapPanel(snap snapHelper, targetDir string) {
 	if err := common.CopyFile(path.Join(binDir, "1panel"), path.Join(targetDir, "1panel")); err != nil {
 		status = err.Error()
 	}
-	if err := common.CopyFile(path.Join(binDir, "1pctl"), targetDir); err != nil {
+	if err := common.CopyFile(path.Join(binDir, "zpctl"), targetDir); err != nil {
 		status = err.Error()
 	}
 	if _, err := cmd.Execf("cp -r %s/lang %s", binDir, targetDir); err != nil {

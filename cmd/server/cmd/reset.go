@@ -35,7 +35,7 @@ var resetMFACmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl reset mfa"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl reset mfa"}))
 			return nil
 		}
 		db, err := loadDBConn()
@@ -51,7 +51,7 @@ var resetSSLCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl reset https"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl reset https"}))
 			return nil
 		}
 		db, err := loadDBConn()
@@ -67,7 +67,7 @@ var resetEntranceCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl reset entrance"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl reset entrance"}))
 			return nil
 		}
 		db, err := loadDBConn()
@@ -83,7 +83,7 @@ var resetBindIpsCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl reset ips"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl reset ips"}))
 			return nil
 		}
 		db, err := loadDBConn()
@@ -99,7 +99,7 @@ var resetDomainCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl reset domain"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl reset domain"}))
 			return nil
 		}
 		db, err := loadDBConn()

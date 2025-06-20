@@ -152,7 +152,7 @@ func (u *UpgradeService) Upgrade(req dto.Upgrade) error {
 			step int
 		}{
 			{path.Join(tmpDir, "1panel"), path.Join(binDir, "1panel"), 1},
-			{path.Join(tmpDir, "1pctl"), path.Join(binDir, "1pctl"), 2},
+			{path.Join(tmpDir, "zpctl"), path.Join(binDir, "zpctl"), 2},
 			{selectInitScript(path.Join(tmpDir, "initscript"), currentServiceName), servicePath, 3},
 		}
 
@@ -164,7 +164,7 @@ func (u *UpgradeService) Upgrade(req dto.Upgrade) error {
 			}
 		}
 
-		if _, err := cmd.Execf("sed -i -e 's#BASE_DIR=.*#BASE_DIR=%s#g' /usr/local/bin/1pctl",
+		if _, err := cmd.Execf("sed -i -e 's#BASE_DIR=.*#BASE_DIR=%s#g' /usr/local/bin/zpctl",
 			global.CONF.System.BaseDir); err != nil {
 			global.LOG.Errorf("Update base directory failed: %v", err)
 			u.handleRollback(originalDir, 2)
@@ -208,7 +208,7 @@ func (u *UpgradeService) handleBackup(fileOp files.FileOp, originalDir string) e
 		dest string
 	}{
 		{path.Join(binDir, "1panel"), originalDir},
-		{path.Join(binDir, "1pctl"), originalDir},
+		{path.Join(binDir, "zpctl"), originalDir},
 		{servicePath, originalDir},
 		{path.Join(binDir, "lang"), originalDir},
 		{geoPath, originalDir},
@@ -244,7 +244,7 @@ func (u *UpgradeService) handleRollback(originalDir string, errStep int) {
 		dest string
 	}{
 		{path.Join(originalDir, "1panel"), path.Join(binDir, "1panel")},
-		{path.Join(originalDir, "1pctl"), path.Join(binDir, "1pctl")},
+		{path.Join(originalDir, "zpctl"), path.Join(binDir, "zpctl")},
 		{path.Join(originalDir, filepath.Base(servicePath)), servicePath},
 		{path.Join(originalDir, "lang"), path.Join(binDir, "lang")},
 		{path.Join(originalDir, "GeoIP.mmdb"), geoPath},

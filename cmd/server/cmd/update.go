@@ -47,7 +47,7 @@ var updateUserName = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl update username"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl update username"}))
 			return nil
 		}
 		username()
@@ -60,7 +60,7 @@ var updatePassword = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl update password"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl update password"}))
 			return nil
 		}
 		password()
@@ -73,7 +73,7 @@ var updatePort = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		i18n.UseI18nForCmd(language)
 		if !isRoot() {
-			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo 1pctl update port"}))
+			fmt.Println(i18n.GetMsgWithMapForCmd("SudoHelper", map[string]interface{}{"cmd": "sudo zpctl update port"}))
 			return nil
 		}
 		port()
@@ -223,7 +223,7 @@ func port() {
 		}
 	}
 
-	std, err := cmd.Exec("1pctl restart")
+	std, err := cmd.Exec("zpctl restart")
 	if err != nil {
 		fmt.Println(std)
 	}
