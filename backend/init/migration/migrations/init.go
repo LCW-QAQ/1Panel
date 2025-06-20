@@ -84,7 +84,7 @@ var AddTableSetting = &gormigrate.Migration{
 			return err
 		}
 
-		if err := tx.Create(&model.Setting{Key: "PanelName", Value: "1Panel"}).Error; err != nil {
+		if err := tx.Create(&model.Setting{Key: "PanelName", Value: "ZPanel"}).Error; err != nil {
 			return err
 		}
 		if err := tx.Create(&model.Setting{Key: "Language", Value: language}).Error; err != nil {
