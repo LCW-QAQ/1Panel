@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"fmt"
 	"os/user"
-	"strings"
 	"time"
 
+	"github.com/1Panel-dev/1Panel/backend/global"
+	"github.com/1Panel-dev/1Panel/backend/init/db"
+	"github.com/1Panel-dev/1Panel/backend/init/log"
+	"github.com/1Panel-dev/1Panel/backend/init/viper"
 	"github.com/1Panel-dev/1Panel/backend/server"
-	cmdUtils "github.com/1Panel-dev/1Panel/backend/utils/cmd"
-	"github.com/glebarez/sqlite"
 	"github.com/spf13/cobra"
 	"gorm.io/gorm"
 )
@@ -37,23 +37,28 @@ type setting struct {
 }
 
 func loadDBConn() (*gorm.DB, error) {
-	stdout, err := cmdUtils.Exec("grep '^BASE_DIR=' /usr/local/bin/zpctl | cut -d'=' -f2")
-	if err != nil {
-		return nil, fmt.Errorf("handle load `BASE_DIR` failed, err: %v", err)
-	}
-	baseDir := strings.ReplaceAll(stdout, "\n", "")
-	if len(baseDir) == 0 {
-		return nil, fmt.Errorf("error `BASE_DIR` find in /usr/local/bin/zpctl \n")
-	}
-	if strings.HasSuffix(baseDir, "/") {
-		baseDir = baseDir[:strings.LastIndex(baseDir, "/")]
-	}
+	/// 需要支持远程数据库
+	// stdout, err := cmdUtils.Exec("grep '^BASE_DIR=' /usr/local/bin/zpctl | cut -d'=' -f2")
+	// if err != nil {
+	// 	return nil, fmt.Errorf("handle load `BASE_DIR` failed, err: %v", err)
+	// }
+	// baseDir := strings.ReplaceAll(stdout, "\n", "")
+	// if len(baseDir) == 0 {
+	// 	return nil, fmt.Errorf("error `BASE_DIR` find in /usr/local/bin/zpctl \n")
+	// }
+	// if strings.HasSuffix(baseDir, "/") {
+	// 	baseDir = baseDir[:strings.LastIndex(baseDir, "/")]
+	// }
 
-	db, err := gorm.Open(sqlite.Open(baseDir+"/1panel/db/1Panel.db"), &gorm.Config{})
-	if err != nil {
-		return nil, fmt.Errorf("init my db conn failed, err: %v \n", err)
-	}
-	return db, nil
+	// db, err := gorm.Open(sqlite.Open(baseDir+"/1panel/db/1Panel.db"), &gorm.Config{})
+	// if err != nil {
+	// 	return nil, fmt.Errorf("init my db conn failed, err: %v \n", err)
+	// }
+	// return db, nil
+	viper.Init()
+	log.Init()
+	db.Init()
+	return global.DB, nil
 }
 
 func getSettingByKey(db *gorm.DB, key string) string {
